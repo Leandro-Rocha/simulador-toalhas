@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personalizador de Toalhas</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Allura&family=Dancing+Script:wght@400;700&family=Great+Vibes&family=Krona+One&family=Pacifico&family=Italianno&family=Parisienne&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="app">
+        <div id="towel-customizer-container">
+            <div class="customizer-preview-area">
+                <div class="sticky-wrapper">
+                    <div class="preview-header-row">
+                        <h3>Lavabo (30x45cm)</h3>
+                        <button class="btn-mobile-zoom" @click="openMobileFullscreen" title="Ver Toalha Inteira">
+                            <i class="fas fa-search-plus"></i> Ver inteira
+                        </button>
+                    </div>
+                    
+                    <div id="full-towel-container" :style="{ backgroundColor: state.towelColorRgb }" ref="mainContainerRef">
+                        <div id="embroidery-area-box" ref="mainEmbroideryBoxRef">
+                            <div class="side-art">
+                                <img id="preview-art-img" :src="state.artUrl" :class="{ flipped: state.isFlipped }" crossorigin="anonymous" v-if="state.artUrl">
+                            </div>
+                            <div class="side-text" ref="textContainerRef">
+                                <div id="text-scaler">
+                                    <span 
+                                        id="display-text" 
+                                        ref="textSpanRef"
+                                        :style="{ fontFamily: state.font, color: state.threadColorHex }"
+                                    >{{ state.text }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="customizer-controls">
+                <div class="control-header-main">
+                    <button class="btn-reset" @click="resetCreator" title="Começar do zero">
+                        <i class="fas fa-undo"></i> Reiniciar
+                    </button>
+                </div>
+
+                <div class="step-group" :class="{ active: state.activeStep === 1 }" id="step-1">
+                    <div class="step-title" @click="toggleStep(1)">
+                        <span>1. O que vamos bordar?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="step-content">
+                        <textarea v-model="state.text" placeholder="Digite o nome aqui..." rows="2" maxlength="32"></textarea>
+                        <p class="sub-label">Escolha o estilo da letra:</p>
+                        <div class="font-buttons-grid">
+                            <div v-for="(fontItem, index) in fonts" :key="index" class="font-btn" :class="{ selected: state.font === fontItem.family }" @click="setFont(fontItem)">
+                                <span :style="{ fontFamily: fontItem.family }">{{ formatFontPreview(state.text) }}</span>
+                                <small>{{ fontItem.name }}</small>
+                            </div>
+                        </div>
+                        <button class="btn-next-step" @click="toggleStep(2)">Continuar <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <div class="step-group" :class="{ active: state.activeStep === 2 }" id="step-2">
+                    <div class="step-title" @click="toggleStep(2)">
+                        <span>2. Escolha o Desenho</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="step-content">
+                        <div class="theme-selector-wrapper">
+                            <label style="display:block; margin-bottom:5px; font-weight:bold; color:#666; font-size:14px;">Filtrar categoria:</label>
+                            <div class="select-container">
+                                <select v-model="state.selectedThemeFilter" id="theme-select-box">
+                                    <option value="all">Ver Todas as Artes</option>
+                                    <option v-for="theme in themes" :key="theme" :value="theme">{{ theme }}</option>
+                                </select>
+                                <i class="fas fa-chevron-down select-arrow"></i>
+                            </div>
+                        </div>
+                        <div class="art-gallery-container-fix">
+                            <div class="art-gallery">
+                                <div v-if="filteredArts.length === 0" style="grid-column: 1/-1; text-align: center; color: #999; padding: 20px;">
+                                    Nenhuma imagem encontrada.
+                                </div>
+                                <div v-for="img in filteredArts" :key="img.id" class="art-item" :class="{ selected: state.artName === img.name }" @click="selectArt(img)">
+                                    <img :src="img.url" loading="lazy">
+                                </div>
+                            </div>
+                        </div>
+                        <button id="btn-flip-art" @click="toggleFlip"><i class="fas fa-arrows-alt-h"></i> Espelhar Desenho</button>
+                        <button class="btn-next-step" @click="toggleStep(3)">Continuar <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <div class="step-group" :class="{ active: state.activeStep === 3 }" id="step-3">
+                    <div class="step-title" @click="toggleStep(3)">
+                        <span>3. Qual a cor da toalha?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="step-content">
+                        <div class="color-options towel-colors">
+                            <div v-for="color in towelColors" :key="color.name" class="color-swatch" :class="{ selected: state.towelColorName === color.name }" :style="{ backgroundColor: color.rgb }" :title="color.name" @click="setTowelColor(color)"></div>
+                        </div>
+                        <div class="current-selection-label">Selecionado: {{ state.towelColorName }}</div>
+                        <button class="btn-next-step" @click="toggleStep(4)">Continuar <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <div class="step-group" :class="{ active: state.activeStep === 4 }" id="step-4">
+                    <div class="step-title" @click="toggleStep(4)">
+                        <span>4. Cor da Linha (Nome)</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="step-content">
+                        <div class="color-options text-colors">
+                            <div v-for="color in threadColors" :key="color.name" class="color-swatch-text" :class="{ selected: state.threadColorName === color.name }" :style="{ backgroundColor: color.hex }" :title="color.name" @click="setThreadColor(color)"></div>
+                        </div>
+                        <div class="current-selection-label">Selecionado: {{ state.threadColorName }}</div>
+                    </div>
+                </div>
+
+                <div class="final-actions-container">
+                    <div class="share-group">
+                        <button id="btn-share" @click="copyUrl"><i class="fas fa-link"></i> Copiar Link</button>
+                        <button id="btn-whatsapp-final" @click="sendWhatsApp"><i class="fab fa-whatsapp"></i> Enviar por WhatsApp</button>
+                    </div>
+                    <p v-if="msgSucesso" id="msg-sucesso" style="display:block">Link Copiado!</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="mobile-fs-modal" :style="{ display: showMobileFs ? 'flex' : 'none' }">
+            <div class="fs-header">
+                <h3>Visualização Completa</h3>
+                <button class="btn-close-fs" @click="showMobileFs = false"><i class="fas fa-times"></i> Fechar</button>
+            </div>
+            <div class="fs-body">
+                <div id="fs-towel-display" :style="{ backgroundColor: state.towelColorRgb }">
+                    <div id="fs-embroidery-box" ref="fsEmbroideryBoxRef">
+                        <div class="side-art">
+                            <img id="fs-art-img" :src="state.artUrl" :class="{ flipped: state.isFlipped }" v-if="state.artUrl">
+                        </div>
+                        <div class="side-text">
+                            <span id="fs-text" :style="{ fontFamily: state.font, color: state.threadColorHex, fontSize: fsFontSize }">{{ state.text }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
