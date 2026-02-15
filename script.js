@@ -41,14 +41,15 @@ createApp({
             ],
             threadColors: [
                 {hex: "#333333", name: "Grafite"},
+                {hex: "#FFFFFF", name: "Branco"},
                 {hex: "#D4AF37", name: "Dourado"},
                 {hex: "#C0C0C0", name: "Prata"},
-                {hex: "#5D4037", name: "Marrom"},
                 {hex: "#0D47A1", name: "Azul Marinho"},
                 {hex: "#B22222", name: "Vermelho"},
-                {hex: "#1B5E20", name: "Verde Musgo"},
                 {hex: "#E91E63", name: "Pink"},
                 {hex: "#4A148C", name: "Roxo"},
+                {hex: "#1B5E20", name: "Verde Musgo"},
+                {hex: "#5D4037", name: "Marrom"},
             ]
         };
 

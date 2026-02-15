@@ -1,6 +1,6 @@
 @font-face {
     font-family: 'Lumios Marker';
-    src: url('Lumios-Marker.otf') format('opentype');
+    src: url('./fonts/Lumios Marker.otf') format('opentype');
     font-weight: normal;
     font-style: normal;
     font-display: swap;
