@@ -2,44 +2,59 @@ const {createApp, ref, reactive, computed, onMounted, watch, nextTick} = Vue;
 
 createApp({
     setup() {
-        const fonts = [
-            {name: 'Great Vibes', family: "'Great Vibes', cursive"},
-            {name: 'Allura', family: "'Allura', cursive"},
-            {name: 'Lumios Marker', family: "'Lumios Marker', cursive"},
-            {name: 'Dancing Script', family: "'Dancing Script', cursive"},
-            {name: 'Alex Brush', family: "'Alex Brush', cursive"},
-            {name: 'Pacifico', family: "'Pacifico', cursive"},
-            {name: 'Italianno', family: "'Italianno', cursive"},
-            {name: 'Parisienne', family: "'Parisienne', cursive"},
-            {name: 'Krone', family: "'Krona One', sans-serif"},
-        ];
+        // --- CONFIGURAÇÕES DO PROJETO ---
+        const CONFIG = {
+            towel: {
+                realWidthCm: 30,
+                realHeightCm: 45,
+                distFromBaseCm: 6
+            },
+            embroidery: {
+                realWidthCm: 18,
+                realHeightCm: 11.5,
+                artWidthCm: 8
+            },
+            fonts: [
+                {name: 'Great Vibes', family: "'Great Vibes', cursive"},
+                {name: 'Allura', family: "'Allura', cursive"},
+                {name: 'Lumios Marker', family: "'Lumios Marker', cursive"},
+                {name: 'Dancing Script', family: "'Dancing Script', cursive"},
+                {name: 'Alex Brush', family: "'Alex Brush', cursive"},
+                {name: 'Pacifico', family: "'Pacifico', cursive"},
+                {name: 'Italianno', family: "'Italianno', cursive"},
+                {name: 'Parisienne', family: "'Parisienne', cursive"},
+                {name: 'Krone', family: "'Krona One', sans-serif"},
+            ],
+            towelColors: [
+                {rgb: "rgb(249, 249, 249)", name: "Branco"},
+                {rgb: "rgb(242, 232, 213)", name: "Marfim"},
+                {rgb: "rgb(234, 224, 200)", name: "Pérola"},
+                {rgb: "rgb(176, 176, 176)", name: "Cinza"},
+                {rgb: "rgb(244, 194, 194)", name: "Rosa-Chá"},
+                {rgb: "rgb(255, 158, 170)", name: "Rosa"},
+                {rgb: "rgb(224, 214, 255)", name: "Lavanda"},
+                {rgb: "rgb(164, 214, 229)", name: "Azul"},
+                {rgb: "rgb(182, 229, 182)", name: "Verde"},
+                {rgb: "rgb(210, 180, 140)", name: "Bege"},
+                {rgb: "rgb(191, 44, 44)", name: "Vermelho"},
+                {rgb: "rgb(42, 42, 42)", name: "Preto"}
+            ],
+            threadColors: [
+                {hex: "#333333", name: "Grafite"},
+                {hex: "#D4AF37", name: "Dourado"},
+                {hex: "#C0C0C0", name: "Prata"},
+                {hex: "#5D4037", name: "Marrom"},
+                {hex: "#0D47A1", name: "Azul Marinho"},
+                {hex: "#B22222", name: "Vermelho"},
+                {hex: "#1B5E20", name: "Verde Musgo"},
+                {hex: "#E91E63", name: "Pink"},
+                {hex: "#4A148C", name: "Roxo"},
+            ]
+        };
 
-        const towelColors = [
-            {rgb: "rgb(249, 249, 249)", name: "Branco"},
-            {rgb: "rgb(242, 232, 213)", name: "Marfim"},
-            {rgb: "rgb(234, 224, 200)", name: "Pérola"},
-            {rgb: "rgb(176, 176, 176)", name: "Cinza"},
-            {rgb: "rgb(244, 194, 194)", name: "Rosa-Chá"},
-            {rgb: "rgb(255, 158, 170)", name: "Rosa"},
-            {rgb: "rgb(224, 214, 255)", name: "Lavanda"},
-            {rgb: "rgb(164, 214, 229)", name: "Azul"},
-            {rgb: "rgb(182, 229, 182)", name: "Verde"},
-            {rgb: "rgb(210, 180, 140)", name: "Bege"},
-            {rgb: "rgb(191, 44, 44)", name: "Vermelho"},
-            {rgb: "rgb(42, 42, 42)", name: "Preto"}
-        ];
-
-        const threadColors = [
-            {hex: "#333333", name: "Grafite"},
-            {hex: "#D4AF37", name: "Dourado"},
-            {hex: "#C0C0C0", name: "Prata"},
-            {hex: "#5D4037", name: "Marrom"},
-            {hex: "#0D47A1", name: "Azul Marinho"},
-            {hex: "#B22222", name: "Vermelho"},
-            {hex: "#1B5E20", name: "Verde Musgo"},
-            {hex: "#E91E63", name: "Pink"},
-            {hex: "#4A148C", name: "Roxo"},
-        ];
+        const fonts = CONFIG.fonts;
+        const towelColors = CONFIG.towelColors;
+        const threadColors = CONFIG.threadColors;
 
         const mockImages = ref([]);
 
@@ -96,19 +111,24 @@ createApp({
             let fontSize = 10;
             el.style.fontSize = fontSize + 'px';
 
-            // Margem de Segurança:
-            // O texto deve parar de crescer quando atingir 95% da largura da caixa.
-            // Isso cria um respiro natural e evita cortes sem precisar de hacks.
-            const maxWidth = container.clientWidth * 0.95;
-            const maxHeight = container.clientHeight * 0.95;
+            // Margem de Segurança Rigorosa:
+            // O texto deve parar de crescer exatamente quando atingir a largura ou altura da caixa.
+            const maxWidth = container.clientWidth;
+            const maxHeight = container.clientHeight;
+
+            // Reset size to avoid overflow before measuring
+            el.style.fontSize = '10px';
 
             while (el.offsetWidth < maxWidth && el.offsetHeight < maxHeight && fontSize < maxFont) {
-                fontSize += 2;
+                fontSize += 1;
                 el.style.fontSize = fontSize + 'px';
             }
 
-            // Pequeno ajuste para garantir
-            el.style.fontSize = (fontSize - 2) + 'px';
+            // Garante que não estourou (backtrack se necessário)
+            if (el.offsetWidth > maxWidth || el.offsetHeight > maxHeight) {
+                fontSize -= 1;
+                el.style.fontSize = fontSize + 'px';
+            }
         };
 
         const openMobileFullscreen = async () => {
@@ -142,6 +162,13 @@ createApp({
         };
         const toggleFlip = () => {
             state.isFlipped = !state.isFlipped;
+        };
+
+        const formatFontPreview = (txt) => {
+            if (!txt || !txt.trim()) return "Nome";
+            // Retorna apenas a primeira palavra ou limita o tamanho para não quebrar o grid
+            const primeiraPalavra = txt.trim().split(/\s+/)[0];
+            return primeiraPalavra.length > 12 ? primeiraPalavra.substring(0, 10) + '...' : primeiraPalavra;
         };
 
         const resetCreator = () => {
@@ -198,9 +225,20 @@ ${window.location.href}`;
             window.open(`https://wa.me/551176690770?text=${msg}`);
         };
 
-        const formatFontPreview = (txt) => {
-            const t = txt.trim() || "Abc";
-            return t.split('\n')[0].substring(0, 15);
+        const applyConfigStyles = () => {
+            const root = document.documentElement;
+            const t = CONFIG.towel;
+            const e = CONFIG.embroidery;
+
+            root.style.setProperty('--towel-aspect', `${t.realWidthCm} / ${t.realHeightCm}`);
+            root.style.setProperty('--embroidery-aspect', `${e.realWidthCm} / ${e.realHeightCm}`);
+            root.style.setProperty('--embroidery-width-percent', `${(e.realWidthCm / t.realWidthCm) * 100}%`);
+            root.style.setProperty('--art-width-percent', `${(e.artWidthCm / e.realWidthCm) * 100}%`);
+            root.style.setProperty('--dist-from-base-percent', `${(t.distFromBaseCm / t.realWidthCm) * 100}%`);
+
+            // Mobile specific logic if needed can also be here, 
+            // but the current CSS handles mobile with media queries.
+            // We set the baseline from CONFIG.
         };
 
         let debounceTimer;
@@ -220,6 +258,7 @@ ${window.location.href}`;
         });
 
         onMounted(async () => {
+            applyConfigStyles();
             try {
                 const response = await fetch('artes-toalhas/manifest.json');
                 if (response.ok) {
