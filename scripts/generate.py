@@ -1,11 +1,8 @@
 import os
 import json
 
-# Caminho absoluto baseado na localização do script
-script_dir = os.path.dirname(os.path.abspath(__file__))
-project_root = os.path.dirname(script_dir)
-base_dir = os.path.join(project_root, 'artes-toalhas')
-output_file = os.path.join(base_dir, 'manifest.json')
+base_dir = '/app/artes-toalhas'
+output_file = '/app/artes-toalhas/manifest.json'
 
 images = []
 id_counter = 1
