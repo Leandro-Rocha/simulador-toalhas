@@ -2,7 +2,6 @@ const {createApp, ref, reactive, computed, onMounted, watch, nextTick} = Vue;
 
 createApp({
     setup() {
-        // --- CONFIGURAÇÕES DO PROJETO ---
         const CONFIG = {
             towel: {
                 realWidthCm: 30,
@@ -26,18 +25,19 @@ createApp({
                 {name: 'Krone', family: "'Krona One', sans-serif"},
             ],
             towelColors: [
+                {rgb: "rgb(216, 208, 179)", name: "Bege Escuro"},
+                {rgb: "rgb(204, 255, 204)", name: "Verde Claro"},
+                {rgb: "rgb(166, 242, 251)", name: "Azul Claro"},
+                {rgb: "rgb(224, 214, 255)", name: "Lilás"},
+                {rgb: "rgb(252, 201, 223)", name: "Rosa"},
+                {rgb: "rgb(254, 213, 213)", name: "Rosa-Chá"},
+                {rgb: "rgb(255, 208, 185)", name: "Pêssego"},
+                {rgb: "rgb(255, 157, 109)", name: "Salmão"},
                 {rgb: "rgb(249, 249, 249)", name: "Branco"},
-                {rgb: "rgb(242, 232, 213)", name: "Marfim"},
-                {rgb: "rgb(234, 224, 200)", name: "Pérola"},
-                {rgb: "rgb(176, 176, 176)", name: "Cinza"},
-                {rgb: "rgb(244, 194, 194)", name: "Rosa-Chá"},
-                {rgb: "rgb(255, 158, 170)", name: "Rosa"},
-                {rgb: "rgb(224, 214, 255)", name: "Lavanda"},
-                {rgb: "rgb(164, 214, 229)", name: "Azul"},
-                {rgb: "rgb(182, 229, 182)", name: "Verde"},
-                {rgb: "rgb(210, 180, 140)", name: "Bege"},
+                {rgb: "rgb(254, 254, 211)", name: "Marfim"},
+                {rgb: "rgb(254, 244, 221)", name: "Bege Claro"},
+                {rgb: "rgb(42, 42, 42)", name: "Preto"},
                 {rgb: "rgb(191, 44, 44)", name: "Vermelho"},
-                {rgb: "rgb(42, 42, 42)", name: "Preto"}
             ],
             threadColors: [
                 {hex: "#333333", name: "Grafite"},
