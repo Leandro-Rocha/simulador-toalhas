@@ -163,12 +163,8 @@ body {
     text-align: center;
     white-space: pre-wrap;
     text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.15);
-
-    /* TRUQUE PARA O ITÁLICO NÃO CORTAR */
-    /* padding-right relativo ao tamanho da fonte.
-       Isso cria espaço para o "rabinho" da letra sem empurrar o layout */
-    padding-right: 0.1em;
-    margin-right: -0.05em; /* Compensação visual minúscula para manter o centro ótico */
+    padding-right: 36px;
+    margin-right: -12px;
 }
 
 .flipped {
@@ -612,7 +608,7 @@ textarea {
         left: 0;
         right: 0;
         height: 1px;
-        border-top: 1px dashed rgba(0, 0, 0, 0.2);
+        #border-top: 1px dashed rgba(0, 0, 0, 0.2);
         pointer-events: none;
         z-index: 10;
     }

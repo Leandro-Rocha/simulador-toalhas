@@ -62,10 +62,10 @@ createApp({
         const state = reactive({
             text: 'Lorena',
             font: "'Great Vibes', cursive",
-            towelColorName: 'Branco',
-            towelColorRgb: 'rgb(249, 249, 249)',
-            threadColorName: 'Grafite',
-            threadColorHex: '#333333',
+            towelColorName: 'Lilás',
+            towelColorRgb: 'rgb(224, 214, 255)',
+            threadColorName: 'Roxo',
+            threadColorHex: '#4a148c',
             artName: '',
             artUrl: '',
             isFlipped: false,
@@ -83,7 +83,7 @@ createApp({
 
         const themes = computed(() => {
             const uniqueThemes = new Set(mockImages.value.map(img => img.theme));
-            return ['all', ...Array.from(uniqueThemes)];
+            return [...Array.from(uniqueThemes)];
         });
 
         const filteredArts = computed(() => {
